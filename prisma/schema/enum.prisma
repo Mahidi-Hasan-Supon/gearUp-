@@ -1,0 +1,11 @@
+
+enum UserRole {
+    ACTIVE 
+    PROVIDER 
+    CUSTOMER
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
