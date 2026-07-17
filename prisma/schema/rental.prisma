@@ -1,0 +1,24 @@
+model Rental {
+    id        String   @id @default(uuid())
+    startDate DateTime
+    endDate   DateTime
+    totalDays Int
+
+    totalPrice Float
+    status RentalStatus @default(PLACED)
+
+    customerId String
+    customer   User   @relation(fields: [customerId], references: [id])
+
+    gearId String
+    gear   Gear   @relation(fields: [gearId], references: [id])
+
+    createdAt DateTime @default(now()) 
+    updatedAt DateTime @updatedAt
+
+    @@index([customerId])
+    @@index([gearId])
+    @@map("rentals")
+}
+
+

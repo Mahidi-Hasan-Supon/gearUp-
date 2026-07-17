@@ -2,10 +2,10 @@
 model Gear {
   id          String @id @default(uuid())
 
-  title       String
+  title       String @unique
   description String
 
-  brand       String
+  brand       String @unique
 
   pricePerDay Float
 
@@ -25,6 +25,10 @@ model Gear {
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+
+  rental Rental[]
+
+
 
   @@index([categoryId])
   @@index([providerId])

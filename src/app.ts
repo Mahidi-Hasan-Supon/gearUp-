@@ -1,11 +1,11 @@
 import cookieParser from "cookie-parser"
-import express , {Application, NextFunction, Request, Response} from "express"
+import express , {Application} from "express"
 import cors from "cors"
 import config from "./config"
-import { prisma } from "./lib/prisma"
-import bcrypt from "bcryptjs"
 import { authRouter } from "./modular/auth/auth.route"
 import { categoryRouter } from "./modular/category/category.route"
+import { gearRouter } from "./modular/gear/gear.route"
+import { rentalRouter } from "./modular/rentals/rental.route"
 
 const app : Application = express()
 
@@ -26,7 +26,11 @@ app.get('/', (req, res) => {
 
 app.use("/api/auth" , authRouter)
 app.use("/api/category" , categoryRouter)
+app.use("/api/gear", gearRouter)
+app.use("/api/rental" , rentalRouter)
+
 
 
 
 export default app
+
