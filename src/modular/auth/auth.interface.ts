@@ -8,4 +8,8 @@ export interface ICreatePayload {
     password:string
 }
 
+export interface ILoginPayload {
+    email:string,
+    password:string
+}
 

@@ -9,3 +9,10 @@ enum UserStatus {
   ACTIVE
   BLOCKED
 }
+
+enum GearStatus {
+    AVAILABLE
+    UNAVAILABLE
+}
+
+
