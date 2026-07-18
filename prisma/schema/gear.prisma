@@ -27,6 +27,7 @@ model Gear {
   updatedAt DateTime @updatedAt
 
   rental Rental[]
+  review Review[]
 
 
 

@@ -16,6 +16,8 @@ model Rental {
     createdAt DateTime @default(now()) 
     updatedAt DateTime @updatedAt
 
+    review Review?
+
     @@index([customerId])
     @@index([gearId])
     @@map("rentals")
