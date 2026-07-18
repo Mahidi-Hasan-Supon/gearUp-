@@ -88,6 +88,9 @@ const getRental = async(customerId:string)=>{
   if(!rental){
     throw new Error("Rental not found")
   }
+  if(rental.length === 0){
+    throw new Error("Plz created rental data")
+  }
 
 
   return rental

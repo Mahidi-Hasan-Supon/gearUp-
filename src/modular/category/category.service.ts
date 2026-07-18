@@ -4,7 +4,7 @@ import { ICategoryPayload } from "./category.interface"
 
 
 
-const createCategory = async(payload:ICategoryPayload)=>{
+const createCategory = async(payload:ICategoryPayload , adminId:string)=>{
     const { name } = payload
     console.log(name , "name");
     const findCategory = await prisma.category.findUnique({
@@ -19,7 +19,8 @@ const createCategory = async(payload:ICategoryPayload)=>{
 
     const category = await prisma.category.create({
         data:{
-            name
+            name,
+            createdBy:adminId
         }
     }) 
 
@@ -35,8 +36,16 @@ const getAllCategory = async()=>{
     const findMany = await prisma.category.findMany({
         orderBy:{
             createdAt:"desc"
+        },include:{
+            admin:{
+               select:{
+                id:true,
+                email:true,
+               name:true
+               }
         }
-    })
+    }
+})
 
     return findMany
 

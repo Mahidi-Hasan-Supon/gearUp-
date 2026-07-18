@@ -6,11 +6,11 @@ import { UserRole } from "../../../generated/prisma/enums";
 
 const router = Router()
 
-router.post("/",auth(UserRole.CUSTOMER , UserRole.ACTIVE, UserRole.PROVIDER), categoryController.createCategory)
+router.post("/",auth(UserRole.ADMIN), categoryController.createCategory)
 
 
 
-router.get("/" ,auth(UserRole.CUSTOMER , UserRole.ACTIVE, UserRole.PROVIDER),  categoryController.getAllCategory)
+router.get("/" ,  categoryController.getAllCategory)
 
 
 export const categoryRouter = router 

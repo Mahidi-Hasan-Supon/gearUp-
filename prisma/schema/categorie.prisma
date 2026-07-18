@@ -3,10 +3,13 @@
   id        String @id @default(uuid())
   name      String @unique
 
+  createdBy String?
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
+  admin User? @relation(fields: [createdBy] , references: [id])
   gear Gear[]
 
   @@map("categories")

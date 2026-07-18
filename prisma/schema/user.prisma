@@ -13,6 +13,7 @@ model User {
     gear Gear[]
     rental Rental[]
     reviews Review[]
+    category Category[]
 
     @@map("users")
 }

@@ -7,9 +7,10 @@ import httpStatus from "http-status"
 
 const createCategory = catchAsync(async(req:Request , res:Response , next:NextFunction)=>{
    const payload = req.body 
+   const adminId =req.user?.id
    // console.log(payload);
 
-   const result = await categoryService.createCategory(payload) 
+   const result = await categoryService.createCategory(payload , adminId as string) 
 
    sendResponse(res,{
     success:true,

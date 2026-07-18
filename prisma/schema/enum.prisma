@@ -1,6 +1,6 @@
 
 enum UserRole {
-    ACTIVE 
+    ADMIN 
     PROVIDER 
     CUSTOMER
 }
