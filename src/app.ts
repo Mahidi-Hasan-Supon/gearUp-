@@ -1,5 +1,5 @@
 import cookieParser from "cookie-parser"
-import express , {Application} from "express"
+import express , {Application, Request, Response} from "express"
 import cors from "cors"
 import config from "./config"
 import { authRouter } from "./modular/auth/auth.route"
@@ -8,6 +8,8 @@ import { gearRouter } from "./modular/gear/gear.route"
 import { rentalRouter } from "./modular/rentals/rental.route"
 import { reviewRouter } from "./modular/reviews/review.route"
 import { providerRouter } from "./provider/provider.route"
+import { notFound } from "./middleware/notFound"
+import { globalErrorHandler } from "./middleware/globalErrorHandler"
 
 const app : Application = express()
 
@@ -32,6 +34,13 @@ app.use("/api/gear", gearRouter)
 app.use("/api/rental" , rentalRouter)
 app.use("/api/reviews" , reviewRouter)
 app.use("/api/provider" , providerRouter)
+
+
+
+app.use(notFound)
+
+app.use(globalErrorHandler)
+
 
 
 export default app
