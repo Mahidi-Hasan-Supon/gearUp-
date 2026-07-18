@@ -10,6 +10,7 @@ import { reviewRouter } from "./modular/reviews/review.route"
 import { providerRouter } from "./provider/provider.route"
 import { notFound } from "./middleware/notFound"
 import { globalErrorHandler } from "./middleware/globalErrorHandler"
+import { adminRouter } from "./modular/admin/admin.route"
 
 const app : Application = express()
 
@@ -34,7 +35,7 @@ app.use("/api/gear", gearRouter)
 app.use("/api/rental" , rentalRouter)
 app.use("/api/reviews" , reviewRouter)
 app.use("/api/provider" , providerRouter)
-
+app.use("/api/admin" , adminRouter)
 
 
 app.use(notFound)
