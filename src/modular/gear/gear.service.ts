@@ -3,61 +3,6 @@ import { prisma } from "../../lib/prisma";
 import { ICreateGearPayload, IGearQuery } from "./gear.interface";
 import { GearWhereInput } from "../../../generated/prisma/models";
 
-const createGear = async (payload: ICreateGearPayload, providerId: string) => {
-  const {
-    title,
-    description,
-    brand,
-    pricePerDay,
-    image,
-    quantity,
-    categoryId,
-  } = payload;
-
-  const category = await prisma.category.findUnique({
-    where: {
-      id: categoryId,
-    },
-  });
-  if (!category) {
-    throw new Error("Category not found");
-  }
-
-  const existingGear = await prisma.gear.findUnique({
-    where: {
-      title,
-      brand,
-      providerId,
-    },
-  });
-  if (existingGear) {
-    throw new Error("Title brand is existing the gear");
-  }
-  const result = await prisma.gear.create({
-    data: {
-      title,
-      brand,
-      description,
-      pricePerDay,
-      image,
-      quantity,
-      categoryId,
-      providerId,
-    },
-    include: {
-      category: true,
-      provider: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-        },
-      },
-    },
-  });
-  return result;
-};
 
 const getAllGear = async (query:IGearQuery) => {
 
@@ -159,7 +104,6 @@ const getGearById = async (id: string) => {
 };
 
 export const gearService = {
-  createGear,
   getAllGear,
   getGearById,
 };

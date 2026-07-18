@@ -2,10 +2,10 @@
 model Gear {
   id          String @id @default(uuid())
 
-  title       String @unique
+  title       String 
   description String
 
-  brand       String @unique
+  brand       String 
 
   pricePerDay Float
 
@@ -20,7 +20,7 @@ model Gear {
   category Category @relation(fields:[categoryId],references:[id])
 
   providerId  String
-  provider User @relation(fields:[providerId],references:[id])
+  provider User @relation(fields:[providerId],references:[id] , onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -33,6 +33,8 @@ model Gear {
 
   @@index([categoryId])
   @@index([providerId])
+
+  @@unique([title,brand , providerId])
 
   @@map("gears")
 }

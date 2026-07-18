@@ -7,6 +7,7 @@ import { categoryRouter } from "./modular/category/category.route"
 import { gearRouter } from "./modular/gear/gear.route"
 import { rentalRouter } from "./modular/rentals/rental.route"
 import { reviewRouter } from "./modular/reviews/review.route"
+import { providerRouter } from "./provider/provider.route"
 
 const app : Application = express()
 
@@ -30,7 +31,7 @@ app.use("/api/category" , categoryRouter)
 app.use("/api/gear", gearRouter)
 app.use("/api/rental" , rentalRouter)
 app.use("/api/reviews" , reviewRouter)
-
+app.use("/api/provider" , providerRouter)
 
 
 export default app

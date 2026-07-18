@@ -5,21 +5,7 @@ import { sendResponse } from "../../../utiles/sendResponse";
 import httpStatus from "http-status"
 
 
-const createGear = catchAsync(async(req:Request , res:Response , next:NextFunction)=>{
 
-    const payload = req.body 
-    const userId = req.user?.id
-  
-    const result = await gearService.createGear(payload , userId as string)
-
-
-    sendResponse(res,{
-        success:true,
-        statusCode:httpStatus.CREATED,
-        message:"Gear create successfully",
-        data:result
-    })
-})
 
 const getAllGear = catchAsync(async(req:Request ,res:Response , next:NextFunction)=>{
     const query =req.query
@@ -51,7 +37,7 @@ const getGearById = catchAsync(async(req:Request , res:Response ,next:NextFuncti
 
 
 export const gearController = {
-    createGear,
+
     getAllGear,
     getGearById
     
