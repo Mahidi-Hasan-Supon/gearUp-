@@ -16,12 +16,15 @@ const createReview = async(payload:ICreateReviewPayload , customerId:string)=>{
     if(!rental){
         throw new Error("Rental not round")
     }
-
+    
+    console.log("Rental Customer ID:", rental.customerId);
+     console.log("Logged In Customer ID:", customerId);
+     
     if(rental.customerId !== customerId){
         throw new Error("You can review on your own rental")
     }
     if(rental.status !== RentalStatus.RETURNED){
-         throw new Error("You can review only after returning the gear");
+        throw new Error("You can review only after returning the gear");
     }
 
 

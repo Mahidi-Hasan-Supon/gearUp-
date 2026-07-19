@@ -7,13 +7,13 @@ const router = Router();
 
 router.post(
   "/",
-  auth(UserRole.ACTIVE, UserRole.CUSTOMER, UserRole.PROVIDER),
+  auth(UserRole.CUSTOMER),
   rentalController.createRental,
 );
 
-router.get("/" ,auth(UserRole.ACTIVE, UserRole.CUSTOMER, UserRole.PROVIDER), rentalController.getRental)
+router.get("/" ,auth(UserRole.CUSTOMER), rentalController.getRental)
 
-router.get("/:id" , rentalController.getRentalById)
+router.get("/:id" ,auth(UserRole.CUSTOMER), rentalController.getRentalById)
 
 
 export const rentalRouter = router;
