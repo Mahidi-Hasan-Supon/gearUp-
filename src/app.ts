@@ -38,9 +38,10 @@ app.use("/api/provider" , providerRouter)
 app.use("/api/admin" , adminRouter)
 
 
+app.use(globalErrorHandler)
+
 app.use(notFound)
 
-app.use(globalErrorHandler)
 
 
 
