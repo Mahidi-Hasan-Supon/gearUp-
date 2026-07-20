@@ -34,15 +34,15 @@ console.log("Logged In User ID:", userId);
     }
 
     // 3. আগে payment করা হয়েছে কিনা
-    // const existingPayment = await tx.payment.findUnique({
-    //   where: {
-    //     rentalId,
-    //   },
-    // });
+    const existingPayment = await tx.payment.findUnique({
+      where: {
+        rentalId,
+      },
+    });
 
-    // if (existingPayment) {
-    //   throw new Error("Payment already exists for this rental");
-    // }
+    if (existingPayment) {
+      throw new Error("Payment already exists for this rental");
+    }
 
     // 4. Stripe Checkout Session
  const session = await stripe.checkout.sessions.create({

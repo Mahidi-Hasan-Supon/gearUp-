@@ -10,7 +10,7 @@ model Payment {
     paymentMethod String?
 
     
-    rentalId      String 
+    rentalId      String @unique
     rental        Rental  @relation(fields: [rentalId], references: [id])
 
     createdAt DateTime @default(now())
