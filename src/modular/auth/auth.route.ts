@@ -11,7 +11,7 @@ router.post("/register",
 
 router.post("/login" , authController.loginUser)
 router.get("/me" ,
-    auth(UserRole.ACTIVE , UserRole.CUSTOMER ,UserRole.PROVIDER),
+    auth(UserRole.ADMIN , UserRole.CUSTOMER ,UserRole.PROVIDER),
    authController.getMyProfile)
 
 router.post("/refreshToken" , authController.refreshToken)
