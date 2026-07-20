@@ -48,13 +48,13 @@ const deleteGearByProvider = catchAsync(
 
     const providerId = req.user?.id
 
-    const result = await providerService.deleteGearByProvider(id as string , providerId as string)
+     await providerService.deleteGearByProvider(id as string , providerId as string)
      
      sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
       message: "Gear Delete successfully",
-      data: result,
+      data: null,
     });
   },
 );

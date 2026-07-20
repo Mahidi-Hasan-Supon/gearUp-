@@ -22,6 +22,9 @@ const createRental = async (
   if (gear.status !== GearStatus.AVAILABLE) {
     throw new Error("Gear is not available");
   }
+    if (gear.quantity <= 0) {
+    throw new Error("Gear is out of stock");
+  }
 
   const startDateNew = new Date(startDate);
   const endDateNew = new Date(endDate);

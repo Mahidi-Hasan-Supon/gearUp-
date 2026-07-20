@@ -14,6 +14,7 @@ const createGearByProvider = async (
     image,
     quantity,
     categoryId,
+    status,
   } = payload;
 
   const category = await prisma.category.findUnique({
@@ -45,6 +46,7 @@ const createGearByProvider = async (
       quantity,
       categoryId,
       providerId,
+      status,
     },
     include: {
       category: true,
@@ -190,7 +192,24 @@ const updateOrderByProviderStatus = async (
 
   if (!gear || gear.providerId !== providerId) {
     throw new Error("You are not the owner of this order");
-  }  
+  }
+
+  // status check
+
+  const allowedStatusTransition: Record<string, string[]> = {
+    PLACED: ["CONFIRMED", "CANCELLED"],
+    CONFIRMED: ["PAID"],
+    PAID: ["PICKED_UP"],
+    PICKED_UP: ["RETURNED"],
+    RETURNED: [],
+    CANCELLED: [],
+  };
+
+  const currentStatus = rental.status;
+
+  if (!allowedStatusTransition[currentStatus]?.includes(status)) {
+    throw new Error(`Cannot change status from ${currentStatus} to ${status}`);
+  }
 
   const updateStatus = await prisma.rental.update({
     where: {
@@ -198,7 +217,8 @@ const updateOrderByProviderStatus = async (
     },
     data: {
       status: status,
-    },include: {
+    },
+    include: {
       gear: {
         select: {
           id: true,
