@@ -17,6 +17,7 @@ model Rental {
     updatedAt DateTime @updatedAt
 
     review Review?
+    payment Payment[]
 
     @@index([customerId])
     @@index([gearId])

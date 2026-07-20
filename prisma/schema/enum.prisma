@@ -25,3 +25,11 @@ enum RentalStatus {
 }
 
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+

@@ -11,6 +11,7 @@ import { providerRouter } from "./provider/provider.route"
 import { notFound } from "./middleware/notFound"
 import { globalErrorHandler } from "./middleware/globalErrorHandler"
 import { adminRouter } from "./modular/admin/admin.route"
+import { paymentRouter } from "./modular/payment/payment.route"
 
 const app : Application = express()
 
@@ -36,6 +37,7 @@ app.use("/api/rental" , rentalRouter)
 app.use("/api/reviews" , reviewRouter)
 app.use("/api/provider" , providerRouter)
 app.use("/api/admin" , adminRouter)
+app.use("/api/payment" , paymentRouter)
 
 
 app.use(globalErrorHandler)
