@@ -2,8 +2,6 @@ import { GearStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { ICreateRentalPayload } from "./rental.interface";
 
-
-
 const createRental = async (
   payload: ICreateRentalPayload,
   customerId: string,
@@ -22,7 +20,7 @@ const createRental = async (
   if (gear.status !== GearStatus.AVAILABLE) {
     throw new Error("Gear is not available");
   }
-    if (gear.quantity <= 0) {
+  if (gear.quantity <= 0) {
     throw new Error("Gear is out of stock");
   }
 
@@ -39,93 +37,97 @@ const createRental = async (
 
   const totalPrice = totalDays * gear.pricePerDay;
 
-  const rental = await prisma.rental.create({
-    data: {
-      startDate:startDateNew,
-      endDate:endDateNew,
-      customerId,
-      gearId,
-      totalPrice,
-      totalDays
+  const transactionResult = await prisma.$transaction(async (tx) => {
+    const rental = await tx.rental.create({
+      data: {
+        startDate: startDateNew,
+        endDate: endDateNew,
+        customerId,
+        gearId,
+        totalPrice,
+        totalDays,
+      },
+      include: {
+        gear: true,
+
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    await tx.gear.update({
+      where: {
+        id: gearId,
+      },
+      data: {
+        quantity: {
+          decrement: 1,
+        },
+      },
+    });
+
+    return rental;
+  });
+  return transactionResult;
+};
+
+const getRental = async (customerId: string) => {
+  const rental = await prisma.rental.findMany({
+    where: {
+      customerId: customerId,
     },
     include: {
-      gear: true,
-
       customer: {
-
         select: {
           id: true,
           name: true,
           email: true,
         },
-
       },
-
+      gear: {
+        include: {
+          category: true,
+        },
+      },
     },
-
   });
-  return rental
+  if (!rental) {
+    throw new Error("Rental not found");
+  }
+  if (rental.length === 0) {
+    throw new Error("Plz created rental data");
+  }
+
+  return rental;
 };
 
-
-
-const getRental = async(customerId:string)=>{
-  const rental = await prisma.rental.findMany({
-    where:{
-   customerId: customerId
-    },include:{
-        customer:{
-            select:{
-                id:true,
-                name:true,
-                email:true
-            }
-        },
-        gear:{
-            include:{
-                category:true
-            }
-        }
-    }
-  })
-  if(!rental){
-    throw new Error("Rental not found")
-  }
-  if(rental.length === 0){
-    throw new Error("Plz created rental data")
-  }
-
-
-  return rental
-}
-
-
-
-
-const getRentalById = async(id:string)=>{
-   const rental = await prisma.rental.findUnique({
-    where:{
-        id
+const getRentalById = async (id: string) => {
+  const rental = await prisma.rental.findUnique({
+    where: {
+      id,
     },
-    include:{
-        customer:{
-            select:{
-                id:true,
-                name:true,
-                email:true
-            },
-        },gear:{
-            include:{
-                category:true
-            }
-        }
-    }
-   }) 
-   return rental
-}
-
-
-
+    include: {
+      customer: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      gear: {
+        include: {
+          category: true,
+        },
+      },
+    },
+  });
+  return rental;
+};
 
 export const rentalService = {
   createRental,

@@ -3,6 +3,7 @@ import { catchAsync } from "../../utiles/catchAsync";
 import { sendResponse } from "../../utiles/sendResponse";
 import { providerService } from "./provider.service";
 import httpStatus from "http-status";
+import { Result } from "pg";
 
 const createGearByProvider = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -29,12 +30,12 @@ const putGearByProvider = catchAsync(
     const {id} = req.params;
     const body = req.body;
 
-     await providerService.putGearByProvider(providerId as string, id as string, body);
+   const result =  await providerService.putGearByProvider(providerId as string, id as string, body);
     sendResponse(res, {
       success: true,
       statusCode: httpStatus.CREATED,
       message: "Gear Updated successfully",
-      data: null,
+      data: result
     });
   },
 );
