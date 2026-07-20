@@ -23,9 +23,9 @@ const createPayment = catchAsync(
 
 const confirmPayment = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("boy" , req.body);
+    // console.log("boy" , req.body);
     const { session} = req.body;
-    console.log("session contoller" , session);
+    // console.log("session contoller" , session);
 
 
     const result = await paymentService.confirmPayment(session);

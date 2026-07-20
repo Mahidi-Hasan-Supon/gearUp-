@@ -27,8 +27,8 @@ const createPayment = async (
     });
 
     // 2. এই rental কার?
-    console.log("Rental Customer ID:", rental.customerId);
-console.log("Logged In User ID:", userId);
+    // console.log("Rental Customer ID:", rental.customerId);
+// console.log("Logged In User ID:", userId);
     if (rental.customerId !== userId) {
       throw new Error("You can pay only for your own rental");
     }
@@ -102,9 +102,9 @@ console.log("Logged In User ID:", userId);
 
 const confirmPayment = async (sessionId: string) => {
   // Stripe থেকে session retrieve
-  console.log(sessionId , "sessionid");
+  // console.log(sessionId , "sessionid");
   const session = await stripe.checkout.sessions.retrieve(sessionId);
-  console.log(session, "service");
+  // console.log(session, "service");
 
   // Payment complete কিনা check
   if (session.payment_status !== "paid") {

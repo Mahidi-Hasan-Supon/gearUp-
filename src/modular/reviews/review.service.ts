@@ -17,8 +17,8 @@ const createReview = async(payload:ICreateReviewPayload , customerId:string)=>{
         throw new Error("Rental not round")
     }
     
-    console.log("Rental Customer ID:", rental.customerId);
-     console.log("Logged In Customer ID:", customerId);
+    // console.log("Rental Customer ID:", rental.customerId);
+    //  console.log("Logged In Customer ID:", customerId);
      
     if(rental.customerId !== customerId){
         throw new Error("You can review on your own rental")

@@ -6,7 +6,7 @@ import { ICategoryPayload } from "./category.interface"
 
 const createCategory = async(payload:ICategoryPayload , adminId:string)=>{
     const { name } = payload
-    console.log(name , "name");
+    // console.log(name , "name");
     const findCategory = await prisma.category.findUnique({
         where:{
            name: name
