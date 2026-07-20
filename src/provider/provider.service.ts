@@ -1,6 +1,8 @@
+import { Result } from "pg";
 import { prisma } from "../lib/prisma";
 import { ICreateGearPayload } from "../modular/gear/gear.interface";
 import { ICreateStatusPayload } from "./provider.interface";
+import { RentalStatus } from "../../generated/prisma/enums";
 
 const createGearByProvider = async (
   payload: ICreateGearPayload,
@@ -211,35 +213,52 @@ const updateOrderByProviderStatus = async (
     throw new Error(`Cannot change status from ${currentStatus} to ${status}`);
   }
 
-  const updateStatus = await prisma.rental.update({
-    where: {
-      id: rentalId,
-    },
-    data: {
-      status: status,
-    },
-    include: {
-      gear: {
-        select: {
-          id: true,
-          title: true,
-          brand: true,
-          pricePerDay: true,
-          status: true,
+  const transactionResult = await prisma.$transaction(async (tx) => {
+    const updateStatus = await tx.rental.update({
+      where: {
+        id: rentalId,
+      },
+      data: {
+        status: status,
+      },
+      include: {
+        gear: {
+          select: {
+            id: true,
+            title: true,
+            brand: true,
+            pricePerDay: true,
+            status: true,
+          },
+        },
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            status: true,
+          },
         },
       },
-      customer: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          role: true,
-          status: true,
+    });
+    if (status === "CANCELLED") {
+      await tx.gear.update({
+        where: {
+          id: rental.gearId,
         },
-      },
-    },
+        data: {
+          quantity: {
+            increment: 1,
+          },
+        },
+      });
+    }
+
+    return updateStatus;
   });
-  return updateStatus;
+
+  return transactionResult;
 };
 
 export const providerService = {
