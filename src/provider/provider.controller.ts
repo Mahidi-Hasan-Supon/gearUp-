@@ -24,6 +24,23 @@ const createGearByProvider = catchAsync(
   },
 );
 
+const getGearByProvider = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const providerId = req.user?.id;
+
+    const result = await providerService.getGearByProvider(
+      providerId as string
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Provider gears retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 const putGearByProvider = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const providerId = req.user?.id;
@@ -107,5 +124,6 @@ export const providerController = {
   createGearByProvider,
   putGearByProvider,
   orderGetByProvider,
-  updateOrderByProviderStatus
+  updateOrderByProviderStatus,
+  getGearByProvider
 };

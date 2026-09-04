@@ -11,7 +11,11 @@ router.put("/gear/:id", auth(UserRole.PROVIDER), providerController.putGearByPro
 router.delete("/gear/:id", auth(UserRole.PROVIDER), providerController.deleteGearByProvider)
 router.get("/orders", auth(UserRole.PROVIDER), providerController.orderGetByProvider)	
 router.patch("/orders/:id", auth(UserRole.PROVIDER), providerController.updateOrderByProviderStatus)
-
+router.get(
+  "/gear",
+  auth(UserRole.PROVIDER),
+  providerController.getGearByProvider
+);
 
 
 

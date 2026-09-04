@@ -87,7 +87,7 @@ const refreshToken = catchAsync(async(req:Request ,res:Response , next:NextFunct
 
         res.cookie("accessToken",accessToken,{
         httpOnly:true,
-        sameSite:"none",
+        sameSite:"lax",
         secure:false,
         maxAge: 1000 * 60 * 60 * 24 
     })

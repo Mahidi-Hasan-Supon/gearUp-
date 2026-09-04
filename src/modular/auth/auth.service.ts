@@ -133,8 +133,8 @@ const refreshToken = async (refreshToken: string) => {
 
   const accessToken = jwtUtils.createToken(
     jwtPayload,
-    config.refresh_token_secret_key,
-   {expiresIn: config.refresh_token_expire_in} as SignOptions,
+    config.access_token_secret_key,
+   {expiresIn: config.access_token_expire_in} as SignOptions,
   );
 
 

@@ -1,8 +1,3 @@
-
-
-
-
-      
 import { NextFunction, Request, Response } from "express";
 import { UserRole } from "../../generated/prisma/enums";
 import { catchAsync } from "../../utiles/catchAsync";
@@ -38,7 +33,10 @@ export const auth = (...requiredRole: UserRole[]) => {
     if (!token) {
       throw new Error("You are not log in");
     }
-    const verified = jwtUtils.verifyToken(token, config.access_token_secret_key);
+    const verified = jwtUtils.verifyToken(
+      token,
+      config.access_token_secret_key,
+    );
 
     if (!verified.success) {
       throw new Error(verified.error);
@@ -49,7 +47,8 @@ export const auth = (...requiredRole: UserRole[]) => {
       return res.status(403).json({
         success: false,
         statusCode: httpStatus.FORBIDDEN,
-        message: "Forbidden,you don't have permission this route ! Because you r not owner",
+        message:
+          "Forbidden,you don't have permission this route ! Because you r not owner",
       });
     }
 
@@ -77,14 +76,3 @@ export const auth = (...requiredRole: UserRole[]) => {
     next();
   });
 };
-
-
-
-
-
-
-
-
-
-
-

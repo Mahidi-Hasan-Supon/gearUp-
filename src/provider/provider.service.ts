@@ -65,6 +65,23 @@ const createGearByProvider = async (
   return result;
 };
 
+const getGearByProvider = async (providerId: string) => {
+  const gears = await prisma.gear.findMany({
+    where: {
+      providerId,
+    },
+    include: {
+      category: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return gears;
+};
+
+
 const putGearByProvider = async (
   providerId: string,
   gearId: string,
@@ -267,4 +284,5 @@ export const providerService = {
   putGearByProvider,
   orderGetByProvider,
   updateOrderByProviderStatus,
+  getGearByProvider
 };

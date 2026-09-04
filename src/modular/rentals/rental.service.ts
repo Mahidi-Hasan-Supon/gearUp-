@@ -94,6 +94,8 @@ const getRental = async (customerId: string) => {
           category: true,
         },
       },
+      // payment call kora
+      payment:true
     },
   });
   if (!rental) {
