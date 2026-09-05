@@ -119,6 +119,12 @@ const createPayment = async (
     throw new Error("You can pay only for your own rental");
   }
 
+  if (rental.status !== "CONFIRMED") {
+    throw new Error(
+      "Payment is only available after provider confirms the rental",
+    );
+  }
+
   // 3. Check existing payment
   const existingPayment = await prisma.payment.findUnique({
     where: {
@@ -202,6 +208,7 @@ const createPayment = async (
     paymentUrl: session.url,
   };
 };
+
 const confirmPayment = async (sessionId: string) => {
   // Stripe থেকে session retrieve
   // console.log(sessionId , "sessionid");
@@ -227,7 +234,7 @@ const confirmPayment = async (sessionId: string) => {
         id: payment.rentalId,
       },
       data: {
-        status: "CONFIRMED",
+        status: "PAID",
       },
     });
 
@@ -251,7 +258,7 @@ const confirmPayment = async (sessionId: string) => {
         id: payment.rentalId,
       },
       data: {
-        status: "CONFIRMED",
+        status: "PAID",
       },
     });
 

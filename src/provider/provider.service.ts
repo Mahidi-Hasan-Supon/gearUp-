@@ -132,26 +132,44 @@ const putGearByProvider = async (
   return update;
 };
 
-const deleteGearByProvider = async (gearId: string, providerId: string) => {
+const deleteGearByProvider = async (
+  gearId: string,
+  providerId: string,
+) => {
   const gear = await prisma.gear.findUnique({
     where: {
       id: gearId,
     },
   });
+
   if (!gear) {
     throw new Error("Gear not found!");
   }
+
   if (gear.providerId !== providerId) {
     throw new Error("You are not the owner of this gear");
   }
 
-  const deleteProvider = await prisma.gear.delete({
+  // Check rental history
+  const rentalExists = await prisma.rental.findFirst({
+    where: {
+      gearId,
+    },
+  });
+
+  if (rentalExists) {
+    throw new Error(
+      "Cannot delete this gear because it has rental history",
+    );
+  }
+
+  const deletedGear = await prisma.gear.delete({
     where: {
       id: gearId,
     },
   });
 
-  return deleteProvider;
+  return deletedGear;
 };
 
 const orderGetByProvider = async (providerId: string) => {
