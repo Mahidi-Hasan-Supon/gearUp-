@@ -9,7 +9,7 @@ const port = config.port
 
 async function main() {
   try {
-    await prisma.$connect
+    await prisma.$connect()
     console.log("Database server connected successfully");
     app.listen(port, () => {
       console.log(`Example app listening on port ${port}`);
