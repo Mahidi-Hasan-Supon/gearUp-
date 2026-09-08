@@ -4,58 +4,98 @@ import { ICreateGearPayload, IGearQuery } from "./gear.interface";
 import { GearWhereInput } from "../../../generated/prisma/models";
 
 
-const getAllGear = async (query:IGearQuery) => {
+const getAllGear = async (query: IGearQuery) => {
+  const minPrice = query.minPrice
+    ? Number(query.minPrice)
+    : undefined;
 
-    const minPrice = query.minPrice ? Number(query.minPrice) : undefined
-    const maxPrice = query.maxPrice ? Number(query.maxPrice) : undefined
+  const maxPrice = query.maxPrice
+    ? Number(query.maxPrice)
+    : undefined;
 
-    const andCondition : GearWhereInput[] = []
+  const andCondition: GearWhereInput[] = [];
 
-    if(query.brand){
-        andCondition.push({
-        brand:{
-            contains:query.brand,
-            mode:"insensitive"
-        }
-        })
-    }
-    if(query.category){
-        andCondition.push({
-        category:{
-            name:{
-                contains:query.category,
-                mode:"insensitive"
-            }
-        }
-        })
-    }
+  // Brand Filter
+  if (query.brand) {
+    andCondition.push({
+      brand: {
+        contains: query.brand,
+        mode: "insensitive",
+      },
+    });
+  }
 
-    if(query.minPrice){
-        andCondition.push({
-            pricePerDay:{
-                gte:minPrice,
-                lte:maxPrice
-            }
-        })
-    }
-    if(query.maxPrice){
-        andCondition.push({
-            pricePerDay:{
-                lte:maxPrice
-            }
-        })
-    }
+  // Category Filter
+  if (query.category) {
+    andCondition.push({
+      category: {
+        name: {
+          contains: query.category,
+          mode: "insensitive",
+        },
+      },
+    });
+  }
 
+  // Price Filter
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    andCondition.push({
+      pricePerDay: {
+        ...(minPrice !== undefined && {
+          gte: minPrice,
+        }),
 
+        ...(maxPrice !== undefined && {
+          lte: maxPrice,
+        }),
+      },
+    });
+  }
+
+  // Availability Date Filter
+  if (query.startDate && query.endDate) {
+    const startDate = new Date(query.startDate);
+    const endDate = new Date(query.endDate);
+
+    andCondition.push({
+      NOT: {
+        rental: {
+          some: {
+            status: {
+              in: [
+                "PLACED",
+                "CONFIRMED",
+                "PAID",
+                "PICKED_UP",
+              ],
+            },
+
+            AND: [
+              {
+                startDate: {
+                  lte: endDate,
+                },
+              },
+              {
+                endDate: {
+                  gte: startDate,
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+  }
 
   const gear = await prisma.gear.findMany({
-
-   where:{
-    AND:andCondition
-   },
+    where: {
+      AND: andCondition,
+    },
 
     include: {
       category: true,
+
       provider: {
         select: {
           id: true,
@@ -65,42 +105,37 @@ const getAllGear = async (query:IGearQuery) => {
         },
       },
     },
+
     orderBy: {
       createdAt: "desc",
     },
   });
+
   return gear;
 };
 
 
+
+
 const getGearById = async (id: string) => {
-
   const gear = await prisma.gear.findUnique({
-
     where: {
-       id
+      id,
     },
     include: {
-
       category: true,
 
       provider: {
-
         select: {
           id: true,
           name: true,
           email: true,
           role: true,
         },
-
       },
-
     },
-
   });
-  return gear
-
-
+  return gear;
 };
 
 export const gearService = {

@@ -3,14 +3,10 @@ import { reviewController } from "./review.controller";
 import { auth } from "../../middleware/auth";
 import { UserRole } from "../../../generated/prisma/enums";
 
+const router = Router();
 
-const router = Router() 
+router.post("/", auth(UserRole.CUSTOMER), reviewController.createReview);
 
+router.get("/my-reviews",auth(UserRole.CUSTOMER),reviewController.getMyReviews);
 
-router.post("/" , auth(UserRole.CUSTOMER), reviewController.createReview)
-
-
-
-export const reviewRouter = router
-
-
+export const reviewRouter = router;

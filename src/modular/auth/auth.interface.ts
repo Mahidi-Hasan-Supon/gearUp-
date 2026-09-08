@@ -5,7 +5,8 @@ export interface ICreatePayload {
     name:string,
     email:string,
     role:UserRole,
-    password:string
+    password:string,
+    photoUrl?:string
 }
 
 export interface ILoginPayload {

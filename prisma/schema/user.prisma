@@ -3,6 +3,7 @@ model User {
     name     String
     password String
     email    String @unique
+    photoUrl String?
     role     UserRole 
     status   UserStatus @default(ACTIVE)
 

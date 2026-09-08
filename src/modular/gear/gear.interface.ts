@@ -1,4 +1,3 @@
-
 import { GearStatus } from "../../../generated/prisma/enums";
 import { GearWhereInput } from "../../../generated/prisma/models";
 
@@ -10,12 +9,17 @@ export interface ICreateGearPayload {
   quantity: number;
   image?: string;
   categoryId: string;
-  status?:GearStatus
+  status?: GearStatus;
 }
 
-export interface IGearQuery  {
+
+export interface IGearQuery {
   category?: string;
   brand?: string;
   minPrice?: string;
   maxPrice?: string;
+
+  startDate?: string;
+  endDate?: string;
 }
+

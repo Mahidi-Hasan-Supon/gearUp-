@@ -13,6 +13,7 @@
   "type": "module",
   "license": "ISC",
   "devDependencies": {
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.1.1",
     "@types/pg": "^8.20.0",
     "prisma": "^7.8.0",
@@ -28,12 +29,15 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "google-auth-library": "^11.0.2",
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.3.0",
     "pg": "^8.22.0",
     "save": "^2.9.0",
     "stripe": "^22.3.2"

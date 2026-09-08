@@ -1,3 +1,4 @@
+import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
@@ -7,7 +8,7 @@ import { jwtUtils } from "../../../utiles/jwt";
 import { get } from "node:http";
 
 const createUserIntoDB = async (payload: ICreatePayload) => {
-  const { name, email, password, role } = payload;
+  const { name, email, password, role, photoUrl } = payload;
 
   const isExist = await prisma.user.findUnique({
     where: {
@@ -30,6 +31,7 @@ const createUserIntoDB = async (payload: ICreatePayload) => {
       email,
       password: hashPassword,
       role,
+      photoUrl,
     },
     omit: {
       password: true,
@@ -71,18 +73,18 @@ const loginUser = async (payload: ILoginPayload) => {
     email: matchUser.email,
     role: matchUser.role,
   };
-//   console.log("Access Token Expiry from Config:", config.access_token_expire_in);
-// console.log("Refresh Token Expiry from Config:", config.refresh_token_expire_in);
+  //   console.log("Access Token Expiry from Config:", config.access_token_expire_in);
+  // console.log("Refresh Token Expiry from Config:", config.refresh_token_expire_in);
 
   const accessToken = jwtUtils.createToken(
     jwtPayload,
     config.access_token_secret_key,
-   {expiresIn: config.access_token_expire_in} as SignOptions,
+    { expiresIn: config.access_token_expire_in } as SignOptions,
   );
   const refreshToken = jwtUtils.createToken(
     jwtPayload,
     config.refresh_token_secret_key,
-  {expiresIn: config.refresh_token_expire_in}  as SignOptions,
+    { expiresIn: config.refresh_token_expire_in } as SignOptions,
   );
 
   return {
@@ -134,12 +136,110 @@ const refreshToken = async (refreshToken: string) => {
   const accessToken = jwtUtils.createToken(
     jwtPayload,
     config.access_token_secret_key,
-   {expiresIn: config.access_token_expire_in} as SignOptions,
+    { expiresIn: config.access_token_expire_in } as SignOptions,
   );
 
+  return {
+    accessToken,
+  };
+};
+
+const googleClient = new OAuth2Client(config.google_client_id);
+
+const googleLogin = async (
+  credential: string,
+  role?: "CUSTOMER" | "PROVIDER",
+) => {
+  const ticket = await googleClient.verifyIdToken({
+    idToken: credential,
+    audience: config.google_client_id,
+  });
+
+  const payload = ticket.getPayload();
+
+  if (!payload?.email) {
+    throw new Error("Google account email not found");
+  }
+
+  const email = payload.email;
+  const name = payload.name || "Google User";
+  const photoUrl = payload.picture || null;
+
+  let user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  // যদি আগে থেকেই user থাকে
+  if (user) {
+    if (user.role === "ADMIN") {
+      throw new Error("Admin cannot login with Google");
+    }
+
+    user = await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        photoUrl: photoUrl || user.photoUrl,
+      },
+    });
+  }
+
+  // নতুন Google user
+  else {
+    if (!role) {
+      throw new Error(
+        "Please select Customer or Provider before creating an account",
+      );
+    }
+
+    const randomPassword = crypto.randomUUID();
+
+    const hashPassword = await bcrypt.hash(
+      randomPassword,
+      Number(config.bcrypt_hash_pass),
+    );
+
+    user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashPassword,
+        photoUrl,
+        role,
+      },
+    });
+  }
+
+  const jwtPayload = {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  };
+
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.access_token_secret_key,
+    {
+      expiresIn: config.access_token_expire_in,
+    } as SignOptions,
+  );
+
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.refresh_token_secret_key,
+    {
+      expiresIn: config.refresh_token_expire_in,
+    } as SignOptions,
+  );
 
   return {
-    accessToken
+    user,
+    accessToken,
+    refreshToken,
   };
 };
 
@@ -148,4 +248,5 @@ export const authService = {
   loginUser,
   getMyProfile,
   refreshToken,
+  googleLogin,
 };
