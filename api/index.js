@@ -9,28 +9,6 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import cors from "cors";
 
-// src/config/index.ts
-import dotenv from "dotenv";
-import path from "path";
-dotenv.config({ path: path.join(process.cwd(), ".env") });
-var config_default = {
-  port: process.env.PORT,
-  app_url: process.env.APP_URL,
-  database_url: process.env.DATABASE_URL,
-  bcrypt_hash_pass: process.env.BCRYPT_HASH_PASS,
-  access_token_secret_key: process.env.ACCESS_TOKEN_SECRET_KEY,
-  refresh_token_secret_key: process.env.REFRESH_TOKEN_SECRET_KEY,
-  access_token_expire_in: process.env.ACCESS_TOKEN_EXPIRE_IN,
-  refresh_token_expire_in: process.env.REFRESH_TOKEN_EXPIRE_IN,
-  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
-  stripe_secret_price_key: process.env.STRIPE_SECRET_PRICE_KEY,
-  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
-  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
-  google_client_id: process.env.GOOGLE_CLIENT_ID,
-  node_env: process.env.NODE_ENV || "development"
-};
-
 // src/modular/auth/auth.route.ts
 import { Router } from "express";
 
@@ -43,7 +21,7 @@ import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 // generated/prisma/client.ts
-import * as path2 from "path";
+import * as path from "path";
 import { fileURLToPath } from "url";
 
 // generated/prisma/internal/class.ts
@@ -257,13 +235,35 @@ var RentalStatus = {
 };
 
 // generated/prisma/client.ts
-globalThis["__dirname"] = path2.dirname(fileURLToPath(import.meta.url));
+globalThis["__dirname"] = path.dirname(fileURLToPath(import.meta.url));
 var PrismaClient = getPrismaClientClass();
 
 // src/lib/prisma.ts
 var connectionString = `${process.env.DATABASE_URL}`;
 var adapter = new PrismaPg({ connectionString });
 var prisma = new PrismaClient({ adapter });
+
+// src/config/index.ts
+import dotenv from "dotenv";
+import path2 from "path";
+dotenv.config({ path: path2.join(process.cwd(), ".env") });
+var config_default = {
+  port: process.env.PORT,
+  app_url: process.env.APP_URL,
+  database_url: process.env.DATABASE_URL,
+  bcrypt_hash_pass: process.env.BCRYPT_HASH_PASS,
+  access_token_secret_key: process.env.ACCESS_TOKEN_SECRET_KEY,
+  refresh_token_secret_key: process.env.REFRESH_TOKEN_SECRET_KEY,
+  access_token_expire_in: process.env.ACCESS_TOKEN_EXPIRE_IN,
+  refresh_token_expire_in: process.env.REFRESH_TOKEN_EXPIRE_IN,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  stripe_secret_price_key: process.env.STRIPE_SECRET_PRICE_KEY,
+  cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
+  google_client_id: process.env.GOOGLE_CLIENT_ID,
+  node_env: process.env.NODE_ENV || "development"
+};
 
 // utiles/jwt.ts
 import jwt from "jsonwebtoken";
@@ -631,21 +631,13 @@ var googleLogin2 = catchAsync(async (req, res) => {
     throw new Error("Google credential is required");
   }
   const result = await authService.googleLogin(credential, role);
-  res.cookie("accessToken", result.accessToken, {
-    httpOnly: true,
-    secure: config_default.node_env === "production",
-    sameSite: "lax"
-  });
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: config_default.node_env === "production",
-    sameSite: "lax"
-  });
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Google login successful",
     data: {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: {
         id: result.user.id,
         name: result.user.name,
@@ -724,11 +716,7 @@ var router = Router();
 router.post("/register", multer_default.single("photo"), authController.createUser);
 router.post("/google", authController.googleLogin);
 router.post("/login", authController.loginUser);
-router.get(
-  "/me",
-  auth(UserRole.ADMIN, UserRole.CUSTOMER, UserRole.PROVIDER),
-  authController.getMyProfile
-);
+router.get("/me", auth(UserRole.ADMIN, UserRole.CUSTOMER, UserRole.PROVIDER), authController.getMyProfile);
 router.post("/refreshToken", authController.refreshToken);
 var authRouter = router;
 
@@ -2056,10 +2044,15 @@ var paymentRouter = router8;
 
 // src/app.ts
 var app = express();
-app.use(cors({
-  origin: config_default.app_url,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://gearup-frontend-phi.vercel.app"
+    ],
+    credentials: true
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

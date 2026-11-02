@@ -107,6 +107,43 @@ const refreshToken = catchAsync(
   },
 );
 
+// const googleLogin = catchAsync(async (req: Request, res: Response) => {
+//   const { credential, role } = req.body;
+
+//   if (!credential) {
+//     throw new Error("Google credential is required");
+//   }
+
+//   const result = await authService.googleLogin(credential, role);
+
+//   res.cookie("accessToken", result.accessToken, {
+//     httpOnly: true,
+//     secure: config.node_env === "production",
+//     sameSite: "lax",
+//   });
+
+//   res.cookie("refreshToken", result.refreshToken, {
+//     httpOnly: true,
+//     secure: config.node_env === "production",
+//     sameSite: "lax",
+//   });
+
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: "Google login successful",
+//     data: {
+//       user: {
+//         id: result.user.id,
+//         name: result.user.name,
+//         email: result.user.email,
+//         role: result.user.role,
+//         photoUrl: result.user.photoUrl,
+//       },
+//     },
+//   });
+// });
+
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
   const { credential, role } = req.body;
 
@@ -116,23 +153,14 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
 
   const result = await authService.googleLogin(credential, role);
 
-  res.cookie("accessToken", result.accessToken, {
-    httpOnly: true,
-    secure: config.node_env === "production",
-    sameSite: "lax",
-  });
-
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: config.node_env === "production",
-    sameSite: "lax",
-  });
-
+  // Backend response-এর মাধ্যমে token Server Action-এ যাবে
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: "Google login successful",
     data: {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: {
         id: result.user.id,
         name: result.user.name,
@@ -149,5 +177,5 @@ export const authController = {
   loginUser,
   getMyProfile,
   refreshToken,
-  googleLogin
+  googleLogin,
 };
